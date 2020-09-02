@@ -1,0 +1,53 @@
+{
+    "title": "php-note",
+    "author": "赵泽仁",
+    "description": "读 phpinternalsbook.com 记",
+    "language": "zh-hans",
+    "gitbook": "3.2.3",
+    "structure": {
+        "readme": "README.md"
+    },
+    "plugins": [
+        "back-to-top-button",
+        "chapter-fold",
+        "splitter",
+        "-highlight",
+        "-lunr",
+        "-search",
+        "search-pro",
+        "-sharing",
+        "sharing-plus",
+        "expandable-chapters-small",
+        "code",
+        "tbfed-pagefooter",
+        "pageview-count",
+        "popup"
+    ],
+    "pluginsConfig": {
+        "sharing": {
+            "facebook": false,
+            "google": false,
+            "pocket": false,
+            "qq": false,
+            "qzone": true,
+            "twitter": false,
+            "weibo": true,
+            "all": [
+                "facebook",
+                "linkedin",
+                "twitter",
+                "weibo",
+                "messenger",
+                "qq",
+                "qzone",
+                "viber",
+                "whatsapp"
+            ]
+        },
+        "tbfed-pagefooter": {
+            "copyright":"",
+            "modify_label": "更新时间：",
+            "modify_format": "YYYY-MM-DD HH:mm:ss"
+        }
+    }
+}
