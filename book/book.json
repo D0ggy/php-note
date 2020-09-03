@@ -20,8 +20,10 @@
         "expandable-chapters-small",
         "code",
         "tbfed-pagefooter",
-        "pageview-count",
-        "popup"
+        "popup",
+        "back-to-top-button",
+        "github",
+        "hide-element" 
     ],
     "pluginsConfig": {
         "sharing": {
@@ -48,6 +50,12 @@
             "copyright":"",
             "modify_label": "更新时间：",
             "modify_format": "YYYY-MM-DD HH:mm:ss"
+        },
+        "github": {
+            "url": "https://github.com/D0ggy/php-note/tree/master/book"
+        },
+        "hide-element": {
+            "elements": [".gitbook-link"]
         }
     }
 }
