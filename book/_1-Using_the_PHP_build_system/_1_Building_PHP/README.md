@@ -450,39 +450,74 @@ Don't forget to run 'make test'
 
 If this is the first time you compile PHP on your platform, we encourage you to run the test suite. Depending on your OS and your build environment you may find bugs in PHP by running the tests. If there are any failures, the script will ask whether you want to send a report to our QA platform, which will allow contributors to analyze the failures. Note that it is quite normal to have a few failing tests and your build will likely work well as long as you don’t see dozens of failures.
 
-The make test command internally invokes the run-tests.php file using your CLI binary. You can run sapi/cli/php run-tests.php --help to display a list of options this script accepts.
+如果这是您第一次在平台上编译 PHP，我们建议您运行测试套件。 根据您的操作系统和构建环境，您可以通过运行测试来发现 PHP 中的错误。 如果有任何故障，脚本将询问您是否要向我们的质量检查平台发送报告，这将使贡献者能够分析故障。请注意，有几次失败的测试是很正常的，只要您看不到数十次失败，您的构建就可能正常运行。
 
-If you manually run run-tests.php you need to specify either the -p or -P option (or an ugly environment variable):
+The `make test` command internally invokes the `run-tests.php` file using your CLI binary. You can run `sapi/cli/php run-tests.php --help` to display a list of options this script accepts.
 
+`make test` 命令使用 CLI 二进制文件在内部调用 `run-tests.php` 文件。 您可以运行 `sapi/cli/php run-tests.php --help` 来显示此脚本接受的选项列表。
+
+If you manually run `run-tests.php` you need to specify either the `-p` or `-P` option (or an ugly environment variable):
+
+如果您手动运行 `run-tests.php`，则需要指定 `-p` 或 `-P` 选项（或丑陋的环境变量）：
+```
 ~/php-src> sapi/cli/php run-tests.php -p `pwd`/sapi/cli/php
 ~/php-src> sapi/cli/php run-tests.php -P
--p is used to explicitly specify a binary to test. Note that in order to run all tests correctly this should be an absolute path (or otherwise independent of the directory it is called from). -P is a shortcut that will use the binary that run-tests.php was called with. In the above example both approaches are the same.
+```
+`-p` is used to explicitly specify a binary to test. Note that in order to run all tests correctly this should be an absolute path (or otherwise independent of the directory it is called from). `-P` is a shortcut that will use the binary that `run-tests.php` was called with. In the above example both approaches are the same.
 
-Instead of running the whole test suite, you can also limit it to certain directories by passing them as arguments to run-tests.php. E.g. to test only the Zend engine, the reflection extension and the array functions:
+`-p` 用于显式指定一个二进制文件来测试。请注意，为了正确运行所有测试，这应该是一个绝对路径（或者独立于从其调用的目录）。`-P` 是一种快捷方式，它将使用与 `run-tests.php` 一起使用的二进制文件。 在上面的示例中，两种方法是相同的。
 
+Instead of running the whole test suite, you can also limit it to certain directories by passing them as arguments to `run-tests.php` .E.g. to test only the Zend engine, the reflection extension and the array functions:
+
+除了运行整个测试套件，您还可以通过将它们作为参数传递给 `run-tests.php` 来将其限制在某些目录中。 例如，仅测试Zend引擎，反射扩展和数组功能：
+```
 ~/php-src> sapi/cli/php run-tests.php -P Zend/ ext/reflection/ ext/standard/tests/array/
+```
 This is very useful, because it allows you to quickly run only the parts of the test suite that are relevant to your changes. E.g. if you are doing language modifications you likely don’t care about the extension tests and only want to verify that the Zend engine is still working correctly.
 
-You don’t need to explicitly use run-tests.php to pass options or limit directories. Instead you can use the TESTS variable to pass additional arguments via make test. E.g. the equivalent of the previous command would be:
+这非常有用，因为它允许您仅快速运行测试套件中与更改相关的部分。 例如，如果您要进行语言修改，则可能不关心扩展测试，而只想验证 Zend 引擎是否仍在正常工作。
 
+You don’t need to explicitly use `run-tests.php` to pass options or limit directories. Instead you can use the TESTS variable to pass additional arguments via `make test` .E.g. the equivalent of the previous command would be:
+
+您无需显式使用 `run-tests.php` 来传递选项或限制目录。相反，您可以使用 `TESTS` 变量通过 `make test` 传递其他参数。 与上一个命令等效：
+```
 ~/php-src> make test TESTS="Zend/ ext/reflection/ ext/standard/tests/array/"
-We will take a more detailed look at the run-tests.php system later, in particular also talk about how to write your own tests and how to debug test failures. See the dedicated tests chapter.
+```
+We will take a more detailed look at the `run-tests.php` system later, in particular also talk about how to write your own tests and how to debug test failures. ==See the dedicated tests chapter.==
 
-Fixing compilation problems and make clean
-As you may know make performs an incremental build, i.e. it will not recompile all files, but only those .c files that changed since the last invocation. This is a great way to shorten build times, but it doesn’t always work well: For example, if you modify a structure in a header file, make will not automatically recompile all .c files making use of that header, thus leading to a broken build.
+稍后，我们将对 `run-tests.php` 系统进行更详细的研究，特别是还讨论如何编写自己的测试以及如何调试测试失败。==查看专用的测试章节==
 
-If you get odd errors while running make or the resulting binary is broken (e.g. if make test crashes it before it gets to run the first test), you should try to run make clean. This will delete all compiled objects, thus forcing the next make call to perform a full build.
+## Fixing compilation problems and make clean
 
-Sometimes you also need to run make clean after changing ./configure options. If you only enable additional extensions an incremental build should be safe, but changing other options may require a full rebuild.
+As you may know `make` performs an incremental build, i.e. it will not recompile all files, but only those `.c` files that changed since the last invocation. This is a great way to shorten build times, but it doesn’t always work well: For example, if you modify a structure in a header file, `make` will not automatically recompile all `.c` files making use of that header, thus leading to a broken build.
 
-A more aggressive cleaning target is available via make distclean. This will perform a normal clean, but also roll back any files brought by the ./configure command invocation. It will delete configure caches, Makefiles, configuration headers and various other files. As the name implies this target “cleans for distribution”, so it is mostly used by release managers.
+如您所知，make执行增量构建，即它将不会重新编译所有文件，而是仅重新编译自上次调用后的已更改的那些 `.c` 文件。这是缩短构建时间的好方法，但并不总是能很好地工作：例如，如果您修改头文件中的结构，`make` 不会利用该头文件自动重新编译所有 `.c` 文件，从而导致失败的构建。
 
-Another source of compilation issues is the modification of config.m4 files or other files that are part of the PHP build system. If such a file is changed, it is necessary to rerun the ./buildconf script. If you do the modification yourself, you will likely remember to run the command, but if it happens as part of a git pull (or some other updating command) the issue might not be so obvious.
+If you get odd errors while running `make` or the resulting binary is broken (e.g. if `make test` crashes it before it gets to run the first test), you should try to run `make clean`. This will delete all compiled objects, thus forcing the next `make` call to perform a full build.
 
-If you encounter any odd compilation problems that are not resolved by make clean, chances are that running ./buildconf --force will fix the issue. To avoid typing out the previous ./configure options afterwards, you can make use of the ./config.nice script (which contains your last ./configure call):
+如果您在运行 `make` 时遇到奇怪的错误，或者生成的二进制文件损坏（例如，如果 `make test` 在运行第一个测试之前将损坏），则应尝试运行 `make clean`。这将删除所有编译的对象，从而在下一个 `make` 命令时执行完整的构建。
 
+Sometimes you also need to run `make clean` after changing `./configure` options. If you only enable additional extensions an incremental build should be safe, but changing other options may require a full rebuild.
+
+有时您还需要在更改 `./configure` 选项后运行 `make clean`。**如果仅启用其他扩展，则增量构建应该是安全的**，但是更改其他选项可能需要完全重建。
+
+A more aggressive cleaning target is available via `make distclean`. This will perform a normal clean, but also roll back any files brought by the `./configure` command invocation. It will delete configure caches, Makefiles, configuration headers and various other files. As the name implies this target “cleans for distribution”, so it is mostly used by release managers.
+
+可通过 `make distclean` 进行更激进的清理。这将执行正常的清理，但还会回滚调用 `./configure` 命令带来的所有文件。它将删除配置缓存，Makefile，配置头和其他各种文件。顾名思义，此目标是“清理分发”，因此它通常由发行的管理者使用。
+
+Another source of compilation issues is the modification of `config.m4` files or other files that are part of the PHP build system. If such a file is changed, it is necessary to rerun the .`/buildconf` script. If you do the modification yourself, you will likely remember to run the command, but if it happens as part of a `git pull` (or some other updating command) the issue might not be so obvious.
+
+编译问题的另一个来源是对 `config.m4` 文件或 PHP 构建系统中的其他文件的修改。如果更改了此类文件，则必须重新运行 `./buildconf` 脚本。 如果您自己进行修改，您可能会记得运行该命令，但是如果它是作为执行 `git pull` （或其他一些更新命令）时产生更改的，则问题可能不会那么明显。
+
+If you encounter any odd compilation problems that are not resolved by `make clean`, chances are that running `./buildconf --force` will fix the issue. To avoid typing out the previous `./configure` options afterwards, you can make use of the `./config.nice` script (which contains your last `./configure` call):
+
+如果遇到了 `make clean` 不能解决的奇怪的编译问题，则运行 `./buildconf --force` 可能会解决该问题。 为避免以后再输入以前的 `./configure` 选项，可以使用 `./config.nice` 脚本（其中包含最后的 `./configure` 调用）：
+```
 ~/php-src> make clean
 ~/php-src> ./buildconf --force
 ~/php-src> ./config.nice
 ~/php-src> make -jN
-One last cleaning script that PHP provides is ./vcsclean. This will only work if you checked out the source code from git. It effectively boils down to a call to git clean -X -f -d, which will remove all untracked files and directories that are ignored by git. You should use this with care.
+```
+One last cleaning script that PHP provides is `./vcsclean`. This will only work if you checked out the source code from git. It effectively boils down to a call to `g`it clean -X -f -d`, which will remove all untracked files and directories that are ignored by git. You should use this with care.
+
+PHP提供的最后一个清理脚本是 `./vcsclean`。 **仅当您从git中签出源代码时，此方法才有效**。有效地归结为 `git clean -X -f -d` ，这个命令将删除 git 忽略的所有未跟踪文件和目录。 **您应该谨慎使用**。
