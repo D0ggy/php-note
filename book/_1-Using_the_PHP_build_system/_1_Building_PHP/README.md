@@ -226,11 +226,16 @@ If you now wanted to stop compiling the CGI SAPI, as well as the _tokenizer_ and
 
 By default most extensions will be compiled statically, i.e. they will be part of the resulting binary. Only the opcache extension is shared by default, i.e. it will generate an `opcache.so` shared object in the `modules/` directory. You can compile other extensions into shared objects as well by writing `--enable-NAME=shared` or `--with-NAME=shared` (but not all extensions support this). We’ll talk about how to make use of shared extensions in the next section.
 
-默认情况下，大多数扩展都是静态编译的，即它们将成为结果二进制文件的一部分。默认情况下，仅共享opcache扩展名，即它将在modules /目录中生成一个opcache.so共享对象。您还可以通过编写--enable-NAME = shared或--with-NAME = shared将其他扩展编译为共享对象（但并非所有扩展都支持此功能）。在下一节中，我们将讨论如何利用共享扩展。
+默认情况下，大多数扩展都是静态编译的，即它们将成为结果二进制文件的一部分。只有扩展 opcache 是默认共享的，它将在 `modules/` 目录中生成一个 `opcache.so` 共享对象。您可以编译其他扩展为共享对象通过 `--enable-NAME=shared` 或 `--with-NAME=shared` （不是所有扩展都支持此功能）。在下一节中，我们将讨论如何利用共享扩展。
 
 To find out which switch you need to use and whether an extension is enabled by default, check `./configure --help`. If the switch is either `--enable-NAME` or `--with-NAME` it means that the extension is not compiled by default and needs to be explicitly enabled. `--disable-NAME` or `--without-NAME` on the other hand indicate an extension that is compiled by default, but can be explicitly disabled.
 
+要想知道您需要使用哪个开关以及是否默认启用某个扩展，使用 `./configure --help` 检查。如果状态是 `--enable-NAME` 或者 `--with-NAME` 则意味着这个扩展默认不被编译并且需要显式的启用。另一方面，`--disable-NAME` 或 `--without-NAME` 表示默认情况下一个扩展已编译，但是可以显式的禁用扩展。
+
 Some extensions are always compiled and can not be disabled. To create a build that only contains the minimal amount of extensions use the `--disable-all` option:
+
+有些扩展总是编译的，不能禁用。为了构建只包含最少量扩展的版本，请使用 `--disable-all` 选项：
+
 ```
 ~/php-src> ./configure --disable-all && make -jN
 ~/php-src> sapi/cli/php -m
@@ -244,21 +249,240 @@ standard
 ```
 The `--disable-all` option is very useful if you want a fast build and don’t need much functionality (e.g. when implementing language changes). For the smallest possible build you can additionally specify the `--disable-cgi` switch, so only the CLI binary is generated.
 
+如果您想快速构建并且不需要太多功能（比如，在实现语言更改时），`--disable-all` 会非常有用。对于最小可能的构建，您可以额外的指定 `--disable-cgi` 开关，结果只会生成 CLI 二进制文件。
+
 There are two more switches, which you should **always** specify when developing extensions or working on PHP:
+
+有两个开关，在开发扩展或者用 PHP 工作时需要经常指定：
 
 `--enable-debug` enables debug mode, which has multiple effects: Compilation will run with `-g` to generate debug symbols and additionally use the lowest optimization level `-O0`. This will make PHP a lot slower, but make debugging with tools like `gdb` more predictable. Furthermore debug mode defines the `ZEND_DEBUG` macro, which will enable various debugging helpers in the engine. Among other things memory leaks, as well as incorrect use of some data structures, will be reported.
 
-`--enable-maintainer-zts` enables thread-safety. This switch will define the ZTS macro, which in turn will enable the whole TSRM (thread-safe resource manager) machinery used by PHP. Writing thread-safe extensions for PHP is very simple, but only if make sure to enable this switch. If you need more information about thread safety and global memory management in PHP, you should read the globals management chapter
+`--enable-debug` 启用调试模式，它具有多种作用：`-g` 可以在编译运行时生成调试符号，并额外的使用最低的优化级别 `-O0`。这会使 PHP 变慢很多，但是使用 `gdb` 之类的工具进行调试时更加可预测。 此外，调试模式定义了 `ZEND_DEBUG` 宏，它将在引擎中启用各种调试助手。 除其他事项外，还将报告内存泄漏以及某些数据结构的不正确使用。
+
+`--enable-maintainer-zts` enables thread-safety. This switch will define the `ZTS` macro, which in turn will enable the whole TSRM (thread-safe resource manager) machinery used by PHP. Writing thread-safe extensions for PHP is very simple, but only if make sure to enable this switch. If you need more information about thread safety and global memory management in PHP, you should read the globals management chapter ==TODOOOOOOOOOOOOOOOOO==
+
+`--enable-maintainer-zts` 启用线程安全。 此开关将定义 `ZTS` 宏，该宏又将在 PHP 启用整个 TSRM （线程安全资源管理器）机制。 为 PHP 编写线程安全扩展非常简单，但前提是必须确保启用此开关。 如果您需要有关PHP中线程安全和全局内存管理的更多信息，则应阅读globals管理一章。==TODOOOOOOOOOO==
 
 On the other hand you should not use either of these options if you want to perform performance benchmarks for your code, as both can cause significant and asymmetrical slowdowns.
 
+另一方面，如果您要为代码执行性能基准测试，则不应使用这两个选项中的任何一个，因为两者都会导致明显的且不对称的速度下降。
+
 Note that `--enable-debug` and `--enable-maintainer-zts` change the ABI of the PHP binary, e.g. by adding additional arguments to many functions. As such, shared extensions compiled in debug mode will not be compatible with a PHP binary built in release mode. Similarly a thread-safe extension (ZTS) is not compatible with a non-thread-safe PHP build (NTS).
+
+请注意 `--enable-debug` 和 `--enable-maintainer-zts` 会更改PHP二进制文件的 ABI，例如，通过向许多函数添加额外的参数。 因此，在调试模式下编译的共享扩展将与在发行版的 PHP 二进制文件不兼容。 同样，线程安全扩展（ZTS）与非线程安全 PHP 构建（NTS）不兼容。
 
 Due to the ABI incompatibility `make install` (and PECL install) will put shared extensions in different directories depending on these options:
 
-- `$PREFIX/lib/php/extensions/no-debug-non-zts-API_NO` for release builds without ZTS
-- `$PREFIX/lib/php/extensions/debug-non-zts-API_NO` for debug builds without ZTS
-- `$PREFIX/lib/php/extensions/no-debug-zts-API_NO` for release builds with ZTS
-- `$PREFIX/lib/php/extensions/debug-zts-API_NO` for debug builds with ZTS
+由于 ABI 不兼容 `make install` （和 PECL 安装）将会根据以下选项将共享扩展放在不同的目录中。
+
+- `$PREFIX/lib/php/extensions/no-debug-non-zts-API_NO` 没有 ZTS 的发行版
+- `$PREFIX/lib/php/extensions/debug-non-zts-API_NO` 没有 ZTS 的调试版本
+- `$PREFIX/lib/php/extensions/no-debug-zts-API_NO` 带有 ZTS 的发行版本
+- `$PREFIX/lib/php/extensions/debug-zts-API_NO` 带有 ZTS 调试版本
 
 The `API_NO` placeholder above refers to the `ZEND_MODULE_API_NO` and is just a date like `20100525`, which is used for internal API versioning.
+
+上面的 `API_NO` 占位符指的是 `ZEND_MODULE_API_NO`，只是一个类似于 `20100525` 的日期，用于内部API版本控制。
+
+For most purposes the configuration switches described above should be sufficient, but of course `./configure` provides many more options, which you’ll find described in the help.
+
+对于大多数目的而言，上述开关的配置就已经足够了，但是 `./configure` 当然可以提供更能多选项，您将在 help 中找到选项的描述。
+
+Apart from passing options to configure, you can also specify a number of environment variables. Some of the more important ones are documented at the end of the configure help output (`./configure --help | tail -25`).
+
+除了传递用于配置的选项外，您还可以指定许多环境变量。一些更重要的信息记录在 configure help 末尾的输出（`./configure --help | tail -25`）。
+
+For example you can use `CC` to use a different compiler and `CFLAGS` to change the used compilation flags:
+
+例如你可以用 `CC` 使用不同的编译器，以及 `CFLAGS` 改变使用的编译标志：
+```
+~/php-src> ./configure --disable-all CC=clang CFLAGS="-O3 -march=native"
+```
+In this configuration the build will make use of clang (instead of gcc) and use a very high optimization level (`-O3 -march=native`).
+
+在此配置中，构建将使用 clang（而不是 gcc）并使用非常高的优化级别(`-O3 -march=native`)。
+
+You may use additional compiler warning flags that could help you spot some bugs. For GCC, you may read them in the [GCC manual](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#Warning-Options)
+
+您可以使用其他编译器警告标志，以帮助您发现一些错误。 对于GCC，您可以在GCC手册中阅读它们 [GCC manual](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#Warning-Options)
+
+## make and make install
+
+After everything is configured, you can use `make` to perform the actual compilation:
+
+配置完所有内容后，您可以使用 `make` 来执行实际的编译：
+```
+~/php-src> make -jN    # where N is the number of cores
+```
+The main result of this operation will be PHP binaries for the enabled SAPIs (by default `sapi/cli/php` and `sapi/cgi/php-cgi`), as well as shared extensions in the `modules/` directory.
+
+这个操作的主要结果是生成启用了的 SAPI 的 PHP 二进制文件（默认情况下为`sapi/cli/php` 和 `sapi/cgi/php-cgi`），以及 `modules/` 目录中的共享扩展。
+
+Now you can run `make install` to install PHP into `/usr/local` (default) or whatever directory you specified using the `--prefix` configure switch.
+
+现在，您可以运行 `make install` 将PHP安装到 `/usr/local`（默认）或使用`--prefix` 配置开关指定的任何目录中。
+
+`make install` will do little more than copy a number of files to the new location. Unless you specified `--without-pear` during configuration, it will also download and install PEAR. Here is the resulting tree of a default PHP build:
+
+`make install` 所做的只是将大量文件复制到新位置。 除非在配置过程中指定`--without-pear`，否则它将下载并安装 PEAR。这是默认PHP构建的结果树：
+```
+> tree -L 3 -F ~/myphp
+
+/home/myuser/myphp
+|-- bin
+|   |-- pear*
+|   |-- peardev*
+|   |-- pecl*
+|   |-- phar -> /home/myuser/myphp/bin/phar.phar*
+|   |-- phar.phar*
+|   |-- php*
+|   |-- php-cgi*
+|   |-- php-config*
+|   `-- phpize*
+|-- etc
+|   `-- pear.conf
+|-- include
+|   `-- php
+|       |-- ext/
+|       |-- include/
+|       |-- main/
+|       |-- sapi/
+|       |-- TSRM/
+|       `-- Zend/
+|-- lib
+|   `-- php
+|       |-- Archive/
+|       |-- build/
+|       |-- Console/
+|       |-- data/
+|       |-- doc/
+|       |-- OS/
+|       |-- PEAR/
+|       |-- PEAR5.php
+|       |-- pearcmd.php
+|       |-- PEAR.php
+|       |-- peclcmd.php
+|       |-- Structures/
+|       |-- System.php
+|       |-- test/
+|       `-- XML/
+`-- php
+    `-- man
+        `-- man1/
+```
+A short overview of the directory structure:
+
+目录结构的简短概述：
+- _bin/_ 包含了 SAPI 二进制文件 (`php` 和 `php-cgi`), 以及 `phpize` 和 `php-config` 脚本。也是 PEAR/PECL 脚本的所在目录.
+- _etc/_ 包含配置文件。注意默认的 php.ini 文件**不在这**。
+- _include/php_ 包含头文件，这些头文件是需要构建额外的扩展或者是将 php 键入到自定义软件时所需的。
+- _lib/php_ 包含 PEAR 文件。The `lib/php/build` 目录包含构建扩展用的重要的文件，例如，`acinclude.m4` 文件包含 PHP 的 M4 宏。如果我们编译了任何shared 扩展，这些文件将位于 lib/php/extensions 的子目录中。
+- _php/man_ 明显包含了针对 `php` 命令的 man 的页面内容。
+
+As already mentioned, the default php.ini location is not etc/. You can display the location using the `--ini` option of the PHP binary:
+
+如前所述，默认的 php.ini 位置不是 etc/。 您可以使用 PHP 二进制文件的 `--ini` 选项显示位置：
+```
+~/myphp/bin> ./php --ini
+Configuration File (php.ini) Path: /home/myuser/myphp/lib
+Loaded Configuration File:         (none)
+Scan for additional .ini files in: (none)
+Additional .ini files parsed:      (none)
+```
+As you can see the default php.ini directory is `$PREFIX/lib` (libdir) rather than `$PREFIX/etc` (sysconfdir). You can adjust the default php.ini location using the `--with-config-file-path=PATH` configure option.
+
+如您所见，默认的 php.ini 目录为 `$PREFIX/lib`，而不是 `$PREFIX/etc` （sysconfdir）。 您可以使用 `--with-config-file-path=PATH` 配置选项来调整默认的 _php.ini_ 位置。
+
+Also note that `make install` will not create an ini file. If you want to make use of a _php.ini_ file it is your responsibility to create one. For example you could copy the default development configuration:
+
+另请注意 `make install` 不会创建 ini 文件。 如果要使用 _php.ini_ 文件，您应当创建一个文件。 例如，您可以复制默认的开发配置：
+```
+~/myphp/bin> cp ~/php-src/php.ini-development ~/myphp/lib/php.ini
+~/myphp/bin> ./php --ini
+Configuration File (php.ini) Path: /home/myuser/myphp/lib
+Loaded Configuration File:         /home/myuser/myphp/lib/php.ini
+Scan for additional .ini files in: (none)
+Additional .ini files parsed:      (none)
+```
+Apart from the PHP binaries the bin/ directory also contains two important scripts: `phpize` and `php-config`.
+
+除了 PHP 二进制文件，bin/ 目录还包含两个重要的脚本：phpize 和 php-config。
+
+`phpize` is the equivalent of `./buildconf` for extensions. It will copy various files from lib/php/build and invoke autoconf/autoheader. You will learn more about this tool in the next section.
+
+`phpize` 等效于 `./buildconf` 的扩展名。它将从 lib/php/build 复制各种文件并调用 autoconf/autoheader。 您将在下一部分中了解有关此工具的更多信息。
+
+`php-config` provides information about the configuration of the PHP build. Try it out:
+
+`php-config` 提供有关 PHP 构建的配置的信息。 试试看：
+```
+~/myphp/bin> ./php-config
+Usage: ./php-config [OPTION]
+Options:
+  --prefix            [/home/myuser/myphp]
+  --includes          [-I/home/myuser/myphp/include/php -I/home/myuser/myphp/include/php/main -I/home/myuser/myphp/include/php/TSRM -I/home/myuser/myphp/include/php/Zend -I/home/myuser/myphp/include/php/ext -I/home/myuser/myphp/include/php/ext/date/lib]
+  --ldflags           [ -L/usr/lib/i386-linux-gnu]
+  --libs              [-lcrypt   -lresolv -lcrypt -lrt -lrt -lm -ldl -lnsl  -lxml2 -lxml2 -lxml2 -lcrypt -lxml2 -lxml2 -lxml2 -lcrypt ]
+  --extension-dir     [/home/myuser/myphp/lib/php/extensions/debug-zts-20100525]
+  --include-dir       [/home/myuser/myphp/include/php]
+  --man-dir           [/home/myuser/myphp/php/man]
+  --php-binary        [/home/myuser/myphp/bin/php]
+  --php-sapis         [ cli cgi]
+  --configure-options [--prefix=/home/myuser/myphp --enable-debug --enable-maintainer-zts]
+  --version           [5.4.16-dev]
+  --vernum            [50416]
+```
+The script is similar to the `pkg-config` script used by linux distributions. It is invoked during the extension build process to obtain information about compiler options and paths. You can also use it to quickly get information about your build, e.g. your configure options or the default extension directory. This information is also provided by `./php -i` (phpinfo), but `php-config` provides it in a simpler form (which can be easily used by automated tools).
+
+该脚本类似于 linux 发行版中使用的 `pkg-config` 脚本。 在扩展构建过程中调用它以获取有关编译器选项和路径的信息。 您还可以使用它来快速获取有关构建的信息，例如 您的配置选项或默认扩展目录。 `./php -i`（phpinfo）也提供了此信息，但是 `php-config` 以更简单的形式提供了此信息（可以由自动化工具轻松使用）。
+
+## Running the test suite
+If the `make` command finishes successfully, it will print a message encouraging you to run `make test`:
+
+如果 `make` 命令成功完成，它将打印一条消息，鼓励您运行 `make test`：
+```
+Build complete.
+Don't forget to run 'make test'
+```
+`make test` will run the PHP CLI binary against our test suite, which is located in the different tests/ directories of the PHP source tree. As a default build is run against approximately 9000 tests (less for a minimal build, more if you enable additional extensions) this can take several minutes. The `make test` command is currently not parallel, so specifying the `-jN` option will not make it faster.
+
+`make test` 将针对我们的测试套件运行 PHP CLI 二进制文件，该套件位于 PHP 源代码树的不同 tests/ 目录中。 由于默认构建是针对大约 9000 个测试运行的（对于最小的构建，它会更少，如果启用其他扩展，则更多），这可能需要几分钟。`make test` 命令当前不是并行的，因此指定`-jN`选项不会使其更快。
+
+If this is the first time you compile PHP on your platform, we encourage you to run the test suite. Depending on your OS and your build environment you may find bugs in PHP by running the tests. If there are any failures, the script will ask whether you want to send a report to our QA platform, which will allow contributors to analyze the failures. Note that it is quite normal to have a few failing tests and your build will likely work well as long as you don’t see dozens of failures.
+
+The make test command internally invokes the run-tests.php file using your CLI binary. You can run sapi/cli/php run-tests.php --help to display a list of options this script accepts.
+
+If you manually run run-tests.php you need to specify either the -p or -P option (or an ugly environment variable):
+
+~/php-src> sapi/cli/php run-tests.php -p `pwd`/sapi/cli/php
+~/php-src> sapi/cli/php run-tests.php -P
+-p is used to explicitly specify a binary to test. Note that in order to run all tests correctly this should be an absolute path (or otherwise independent of the directory it is called from). -P is a shortcut that will use the binary that run-tests.php was called with. In the above example both approaches are the same.
+
+Instead of running the whole test suite, you can also limit it to certain directories by passing them as arguments to run-tests.php. E.g. to test only the Zend engine, the reflection extension and the array functions:
+
+~/php-src> sapi/cli/php run-tests.php -P Zend/ ext/reflection/ ext/standard/tests/array/
+This is very useful, because it allows you to quickly run only the parts of the test suite that are relevant to your changes. E.g. if you are doing language modifications you likely don’t care about the extension tests and only want to verify that the Zend engine is still working correctly.
+
+You don’t need to explicitly use run-tests.php to pass options or limit directories. Instead you can use the TESTS variable to pass additional arguments via make test. E.g. the equivalent of the previous command would be:
+
+~/php-src> make test TESTS="Zend/ ext/reflection/ ext/standard/tests/array/"
+We will take a more detailed look at the run-tests.php system later, in particular also talk about how to write your own tests and how to debug test failures. See the dedicated tests chapter.
+
+Fixing compilation problems and make clean
+As you may know make performs an incremental build, i.e. it will not recompile all files, but only those .c files that changed since the last invocation. This is a great way to shorten build times, but it doesn’t always work well: For example, if you modify a structure in a header file, make will not automatically recompile all .c files making use of that header, thus leading to a broken build.
+
+If you get odd errors while running make or the resulting binary is broken (e.g. if make test crashes it before it gets to run the first test), you should try to run make clean. This will delete all compiled objects, thus forcing the next make call to perform a full build.
+
+Sometimes you also need to run make clean after changing ./configure options. If you only enable additional extensions an incremental build should be safe, but changing other options may require a full rebuild.
+
+A more aggressive cleaning target is available via make distclean. This will perform a normal clean, but also roll back any files brought by the ./configure command invocation. It will delete configure caches, Makefiles, configuration headers and various other files. As the name implies this target “cleans for distribution”, so it is mostly used by release managers.
+
+Another source of compilation issues is the modification of config.m4 files or other files that are part of the PHP build system. If such a file is changed, it is necessary to rerun the ./buildconf script. If you do the modification yourself, you will likely remember to run the command, but if it happens as part of a git pull (or some other updating command) the issue might not be so obvious.
+
+If you encounter any odd compilation problems that are not resolved by make clean, chances are that running ./buildconf --force will fix the issue. To avoid typing out the previous ./configure options afterwards, you can make use of the ./config.nice script (which contains your last ./configure call):
+
+~/php-src> make clean
+~/php-src> ./buildconf --force
+~/php-src> ./config.nice
+~/php-src> make -jN
+One last cleaning script that PHP provides is ./vcsclean. This will only work if you checked out the source code from git. It effectively boils down to a call to git clean -X -f -d, which will remove all untracked files and directories that are ignored by git. You should use this with care.
