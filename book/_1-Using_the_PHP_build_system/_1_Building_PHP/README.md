@@ -12,7 +12,7 @@ This chapter also provides an overview of how the PHP build system works and whi
 
 <span id="id3">[1]</span> 免责声明: 对在 Windows 上编译 PHP 产生的后果概不负责。
 
-## Why not use packages?
+## <span id="why-not-use-packages">Why not use packages?</span>
 ---------------------------
 If you are currently using PHP, you likely installed it through your package manager, using a command like `sudo apt-get install php`. Before explaining the actual compilation you should first understand why doing your own compile is necessary and you can’t just use a prebuilt package. There are multiple reasons for this:
 
@@ -34,7 +34,7 @@ PHP only provides support for the software as provided on php.net and not for th
 
 PHP 仅对 [php.net](https://php.net/) 上提供的软件提供支持，而对发行版修改的版本不提供支持。如果您想报告错误，提交补丁或利用我们的帮助渠道进行扩展编写，则应始终对照正式的PHP版本进行工作。当我们在本书中谈论 “PHP” 时，我们总是指受官方支持的版本。
 
-## Obtaining the source code
+## <span id="obtaining-the-source-code">Obtaining the source code</span>
 ---------------------------
 Before you can build PHP you first need to obtain its source code. There are two ways to do this: You can either download an archive from PHP’s download page or clone the git repository from git.php.net (or the mirror on Github).
 
@@ -97,7 +97,7 @@ If you are using Debian or Ubuntu you can use `sudo apt-get build-dep php7` to i
 
 如果您使用的是 Debian 或 Ubuntu，您可以用 `sudo apt-get build-dep php7` 一次性安装大量的可选的构建依赖项。如果您仅针对默认构建，则其中许多将不是必须的。
 
-## Build overview 构建概览
+## <span id="build-overview">Build overview</span> 构建概览
 ---------------------------
 
 Before taking a closer look at what the individual build steps do, here are the commands you need to execute for a “default” PHP build:
@@ -135,7 +135,7 @@ Now lets take a closer look at the individual build steps!
 
 现在，让我们仔细看看各个构建步骤！
 
-## The *./buildconf* script （./buildconf 脚本）
+## <span id="build-script">The *./buildconf* script</span>（./buildconf 脚本）
 
 If you are building from the git repository, the first thing you’ll have to do is run the `./buildconf` script. This script does little more than invoking the `build/build.mk` makefile, which in turn calls `build/build2.mk`.
 
@@ -165,7 +165,7 @@ If you update your git repository using `git pull` (or some other command) and g
 
 如果您用 `git pull` （或其他命令）更新您的 git 仓库，并在 `make` 步骤出现了奇怪的错误，这通常意味着构建配置中某些内容已经修改了，您需要运行 ./`buildconf --force`。
 
-## The _./configure_ script
+## <span id="configure-script">The _./configure_ script</span>
 
 Once the `./configure` script is generated you can make use of it to customize your PHP build. You can list all supported options using `--help`:
 
@@ -306,7 +306,7 @@ You may use additional compiler warning flags that could help you spot some bugs
 
 您可以使用其他编译器警告标志，以帮助您发现一些错误。 对于GCC，您可以在GCC手册中阅读它们 [GCC manual](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#Warning-Options)
 
-## make and make install
+## <span id="make-and-make-install">make and make install</span>
 
 After everything is configured, you can use `make` to perform the actual compilation:
 
@@ -436,7 +436,7 @@ The script is similar to the `pkg-config` script used by linux distributions. It
 
 该脚本类似于 linux 发行版中使用的 `pkg-config` 脚本。 在扩展构建过程中调用它以获取有关编译器选项和路径的信息。 您还可以使用它来快速获取有关构建的信息，例如 您的配置选项或默认扩展目录。 `./php -i`（phpinfo）也提供了此信息，但是 `php-config` 以更简单的形式提供了此信息（可以由自动化工具轻松使用）。
 
-## Running the test suite
+## <span id="running-the-test-suit">Running the test suite</span>
 If the `make` command finishes successfully, it will print a message encouraging you to run `make test`:
 
 如果 `make` 命令成功完成，它将打印一条消息，鼓励您运行 `make test`：
@@ -487,7 +487,7 @@ We will take a more detailed look at the `run-tests.php` system later, in partic
 
 稍后，我们将对 `run-tests.php` 系统进行更详细的研究，特别是还讨论如何编写自己的测试以及如何调试测试失败。==查看专用的测试章节==
 
-## Fixing compilation problems and make clean
+## <span id="fixing-compilation-problems-and-make-clean">Fixing compilation problems and make clean<span>
 
 As you may know `make` performs an incremental build, i.e. it will not recompile all files, but only those `.c` files that changed since the last invocation. This is a great way to shorten build times, but it doesn’t always work well: For example, if you modify a structure in a header file, `make` will not automatically recompile all `.c` files making use of that header, thus leading to a broken build.
 
