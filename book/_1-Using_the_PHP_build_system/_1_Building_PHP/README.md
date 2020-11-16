@@ -163,7 +163,7 @@ The second option is `--force`, which will allow running `./buildconf` in releas
 
 If you update your git repository using `git pull` (or some other command) and get weird errors during the `make` step, this usually means that something in the build configuration changed and you need to run `./buildconf --force`.
 
-如果您用 `git pull` （或其他命令）更新您的 git 仓库，并在 `make` 步骤出现了奇怪的错误，这通常意味着构建配置中某些内容已经修改了，您需要运行 ./`buildconf --force`。
+如果您用 `git pull` （或其他命令）更新您的 git 仓库，并在 `make` 步骤出现了奇怪的错误，这通常意味着构建配置中某些内容已经修改了，您需要运行 `./buildconf --force`。
 
 ## <span id="configure-script">The _./configure_ script</span>
 
