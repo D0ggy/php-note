@@ -518,6 +518,6 @@ If you encounter any odd compilation problems that are not resolved by `make cle
 ~/php-src> ./config.nice
 ~/php-src> make -jN
 ```
-One last cleaning script that PHP provides is `./vcsclean`. This will only work if you checked out the source code from git. It effectively boils down to a call to `g`it clean -X -f -d`, which will remove all untracked files and directories that are ignored by git. You should use this with care.
+One last cleaning script that PHP provides is `./vcsclean`. This will only work if you checked out the source code from git. It effectively boils down to a call to `git clean -X -f -d`, which will remove all untracked files and directories that are ignored by git. You should use this with care.
 
 PHP提供的最后一个清理脚本是 `./vcsclean`。 **仅当您从git中签出源代码时，此方法才有效**。有效地归结为 `git clean -X -f -d` ，这个命令将删除 git 忽略的所有未跟踪文件和目录。 **您应该谨慎使用**。
