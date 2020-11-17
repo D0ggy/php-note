@@ -1,6 +1,6 @@
 [toc]
 
-# Building PHP
+# <span id="building-php">Building PHP<span>
 -----------------
 This chapter explains how you can compile PHP in a way that is suitable for development of extensions or core modifications. We will only cover builds on Unixoid systems. If you wish to build PHP on Windows, you should take a look at the step-by-step build instructions in the PHP wiki [1].
 
