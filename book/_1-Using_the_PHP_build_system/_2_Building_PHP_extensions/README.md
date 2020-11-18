@@ -63,7 +63,7 @@ If you need information about the difference between extensions and Zend extensi
 
 Unless you specified `--without-pear` during the configuration stage of your PHP build, `make install` will download and install PECL as a part of PEAR. You will find the `pecl` script in the `$PREFIX/bin` directory. Installing extensions is now as simple as running `pecl install EXTNAME`, e.g.:
 
-除非在PHP构建的配置阶段指定了 `--with-pear`，否则 `make install` 将下载并安装 PECL 作为 PEAR 的一部分。您可以在 `$PREFIX/bin` 目录中找到 `pecl` 脚本。现在，安装扩展程序就像运行 `pecl install EXTNAME` 一样简单，例如：
+除非在 PHP 构建的配置阶段指定了 `--with-pear`，否则 `make install` 将下载并安装 PECL 作为 PEAR 的一部分。您可以在 `$PREFIX/bin` 目录中找到 `pecl` 脚本。现在，安装扩展程序就像运行 `pecl install EXTNAME` 一样简单，例如：
 
 ```bash
 ~/myphp> bin/pecl install apcu
@@ -81,7 +81,7 @@ While `pecl install` is very handy for the end-user, it is of little interest to
 
 There is no fundamental difference between a third-party extension and an extension bundled with PHP. As such you can build an external extension simply by copying it into the PHP source tree and then using the usual build procedure. We’ll demonstrate this using APCu as an example.
 
-第三方扩展和与 PHP 捆绑在一起的扩展之间没有根本区别。这样，您可以简单地通过将复制到PHP源代码树中构建外部扩展，然后使用通常的构建过程来构建外部扩展。我们将以 APCu 为例进行演示。
+第三方扩展和与 PHP 捆绑在一起的扩展之间没有根本区别。这样，您可以简单地通过将复制到 PHP 源代码树中构建外部扩展，然后使用通常的构建过程来构建外部扩展。我们将以 APCu 为例进行演示。
 
 First of all, you’ll have to place the source code of the extension into the `ext/EXTNAME` directory of your PHP source tree. If the extension is available via git, this is as simple as cloning the repository from within `ext/`:
 
@@ -102,7 +102,7 @@ Alternatively you can also download a source tarball and extract it:
 ```
 The extension will contain a `config.m4` file, which specifies extension-specific build instructions for use by autoconf. To incorporate them into the `./configure` script, you’ll have to run `./buildconf` again. To ensure that the configure file is really regenerated, it is recommended to delete it beforehand:
 
-该扩展名将包含 `config.m4` 文件，该文件指定供 autoconf 使用的特定于扩展名的构建指令。 要将它们合并到./configure脚本中，您必须再次运行 `./buildconf`。 为了确保确实重新生成了配置文件，建议事先将其删除：
+该扩展将包含 `config.m4` 文件，该文件指定供 autoconf 使用的特定于扩展名的构建指令。要将它们合并到 `./configure` 脚本中，您必须再次运行 `./buildconf`。为了确保确实重新生成了配置文件，建议事先将其删除：
 
 ```bash
 ~/php-src> rm configure && ./buildconf --force
@@ -118,13 +118,13 @@ You can now use the `./config.nice` script to add APCu to your existing configur
 ```
 Finally run `make -jN` to perform the actual build. As we didn’t use `--enable-apcu=shared` the extension is statically linked into the PHP binary, i.e. no additional actions are needed to make use of it. Obviously you can also use `make install` to install the resulting binaries.
 
-最后运行 `make -jN` 来执行实际的构建。由于我们没有使用 `--enable-apcu=shared`，因此扩展名已静态链接到PHP二进制文件中，即无需其他操作即可使用它。显然，您也可以使用 `make install` 来安装生成的二进制文件。
+最后运行 `make -jN` 来执行实际的构建。由于我们没有使用 `--enable-apcu=shared`，因此扩展名已静态链接到 PHP 二进制文件中，即无需其他操作即可使用它。显然，您也可以使用 `make install` 来安装生成的二进制文件。
 
 ## <span id="building-extensions-using-phpize">Building extensions using phpize<span>
 
 It is also possible to build extensions separately from PHP by making use of the `phpize` script that was already mentioned in the [Building PHP](../_1_Building_PHP/README.md#building-php) section.
 
-通过使用[Building PHP](../_1_Building_PHP/README.md#building-php) 中已经提到的 `phpize` 脚本，可以使构建扩展与 PHP 分开。
+通过使用 [Building PHP](../_1_Building_PHP/README.md#building-php) 中已经提到的 `phpize` 脚本，可以使构建扩展与 PHP 分开。
 
 `phpize` plays a similar role as the `./buildconf` script used for PHP builds: First it will import the PHP build system into your extension by copying files from `$PREFIX/lib/php/build`. Among these files are `acinclude.m4` (PHP’s M4 macros), `phpize.m4` (which will be renamed to `configure.in` in your extension and contains the main build instructions) and `run-tests.php`.
 
@@ -146,7 +146,7 @@ Zend Extension Api No:   220121113
 ```
 You should always specify the `--with-php-config` option when building extensions (unless you have only a single, global installation of PHP), otherwise `./configure` will not be able to correctly determine what PHP version and flags to build against. Specifying the `php-config` script also ensures that `make install` will move the generated `.so` file (which can be found in the `modules/` directory) to the right extension directory.
 
-构建扩展时，应始终指定 `--with-php-config` 选项（除非只有一个全局的PHP安装），否则 `./configure` 将无法正确确定要针对哪个 PHP 版本和标志进行构建。指定 `php-config` 脚本还可以确保 `make install` 将生成的 `.so` 文件（可以在 `modules/` 目录中找到）移动到正确的扩展目录中。
+构建扩展时，应始终指定 `--with-php-config` 选项（除非只有一个全局的 PHP 安装），否则 `./configure` 将无法正确确定要针对哪个 PHP 版本和标志进行构建。指定 `php-config` 脚本还可以确保 `make install` 将生成的 `.so` 文件（可以在 `modules/` 目录中找到）移动到正确的扩展目录中。
 
 As the `run-tests.php` file was also copied during the `phpize` stage, you can run the extension tests using `make test` (or an explicit call to run-tests).
 
@@ -326,17 +326,17 @@ Zend Extension Api No:   220131226
 _Zend Module Api No_ is itself built with a date using the year.month.day format. This is the date of the day the API changed and was tagged. _Zend Extension Api No_ is the Zend version followed by _Zend Module Api No_.
 
 >**注意**
-_Zend Module Api No_ 本身使用使用 year.month.day 格式的日期构建。这是 API 更改并被标记的日期。 _Zend Extension Api No_ 是Zend版本，其后是 _Zend Module Api No_。
+_Zend Module Api No_ 本身使用使用 year.month.day 格式的日期构建。这是 API 更改并被标记的日期。_Zend Extension Api No_ 是Zend版本，其后是 _Zend Module Api No_。
 
 >**Note**
 Too many numbers? Yes. One API number, bound to one PHP version, would really be enough for anybody and would ease the understanding of PHP versioning. Unfortunately, we got 3 different API numbers in addition to the PHP version itself. Which one should you look for? The answer is any : they all-three-of-them evolve when PHP version evolve. For historical reasons, we got 3 different numbers.
 
 >**注意**
-数字太多？ 是。 一个 API 编号，绑定到一个 PHP 版本，对于任何人来说确实足够，并且可以简化对 PHP 版本控制的理解。不幸的是，除了PHP版本本身，我们还获得了3个不同的API编号。您应该寻找哪一个？ 答案是任意的：当 PHP 版本演变时，它们全部由三者演变而成。 由于历史原因，我们得到了3个不同的数字。
+数字太多？是。一个 API 编号，绑定到一个 PHP 版本，对于任何人来说确实足够，并且可以简化对 PHP 版本控制的理解。不幸的是，除了PHP版本本身，我们还获得了 3 个不同的 API 编号。您应该寻找哪一个？答案是任意的：当 PHP 版本演变时，它们全部由三者演变而成。由于历史原因，我们得到了 3 个不同的数字。
 
 But, you are a C developer anren’t you? Why not build a “compatibility” header on your side, based on such number? We authors, use something like this in extensions of ours:
 
-但是，您是  C开发人员，不是吗？为什么不根据这样的数字在您这一边建立“兼容性”标头？ 我们在我们的扩展中使用以下内容：
+但是，您是 C 开发人员，不是吗？为什么不根据这样的数字在您这一边建立“兼容性”标头？ 我们在我们的扩展中使用以下内容：
 ```c
 #include "php.h"
 #include "Zend/zend_extensions.h"
